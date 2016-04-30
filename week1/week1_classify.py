@@ -14,7 +14,8 @@ df = pd.read_csv('after_preprocess.csv', parse_dates=['bookingdate', 'creationda
 #  'simple_journal', 'cardverificationcodesupplied', 'cvcresponsecode',
 #  'creationdate', 'accountcode', 'mail_id', 'ip_id', 'card_id']
 
-attributes = ['is_same_currency_shopper', 'is_same_issuer_shopper', 'relative_amount', 'average_amount_daily']
+attributes = ['is_same_currency_shopper', 'is_same_issuer_shopper', 'relative_amount', 'average_amount_daily',
+              'transaction_hour']
 label = 'true_label'
 
 X = df.ix[:, attributes].values
@@ -29,8 +30,10 @@ num_zero = np.count_nonzero(y == 0)
 ratio = float(num_zero) / float(num_one)
 print(ratio)
 
+X_train, X_test, y_train, y_test = cross_validation.train_test_split(X, y, train_size=0.8)
+
 smote = SMOTETomek(ratio=90, verbose=False)
-smox, smoy = smote.fit_transform(X, y)
+smox, smoy = smote.fit_transform(X_train, y_train)
 
 print("ratio after")
 num_one = np.count_nonzero(smoy == 1)
@@ -43,15 +46,13 @@ print(ratio)
 #clf = MultinomialNB()
 clf = KNeighborsClassifier(n_neighbors=1)
 
-#X_train, X_test, y_train, y_test = cross_validation.train_test_split(smox, smoy, train_size=0.8)
+clf.fit(smox, smoy)
+predicted = clf.predict(X_test)
 
-#clf.fit(X_train, y_train)
-#predicted = clf.predict(X_test)
+print(confusion_matrix(y_test, predicted, labels=[1, 0]))
 
-#print(confusion_matrix(y_test, predicted, labels=[1, 0]))
-
-scores = cross_validation.cross_val_score(clf, smox, smoy, cv=10, scoring='f1')
-print("F1: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
+#scores = cross_validation.cross_val_score(clf, smox, smoy, cv=10, scoring='f1')
+#print("F1: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
 
 #clf.fit(X[:-1], y[:-1])
 

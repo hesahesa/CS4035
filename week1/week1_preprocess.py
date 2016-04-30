@@ -90,6 +90,9 @@ def getDailyAverage(row):
 def parseCreationDate(row):
     return row['creationdate'].date()
 
+def parseHour(row):
+    return row['creationdate'].time().hour
+
 # threeshold from mean of each currency, free parameter chosen by user
 threeshold_AUD = 0
 threeshold_GBP = 0
@@ -114,6 +117,8 @@ df['relative_amount'] = df.apply(lambda row: getRelativeAmount(row), axis=1)
 print("generate 5")
 df['average_amount_daily'] = df.apply(lambda row: getDailyAverage(row), axis=1)
 print("generate 6")
+df['transaction_hour'] = df.apply(lambda row: parseHour(row), axis=1)
+print("generate 7")
 df['true_label'] = df.apply(lambda row: isValidTrx(row), axis=1)
 
 print(df.columns)
