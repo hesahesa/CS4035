@@ -1,7 +1,10 @@
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.svm import SVC
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.neighbors import KNeighborsClassifier
 import numpy as np
 from sklearn import cross_validation
-from unbalanced_dataset import SMOTE
+from unbalanced_dataset import SMOTETomek
 import pandas as pd
 
 df = pd.read_csv('after_preprocess.csv', parse_dates=['bookingdate', 'creationdate'])
@@ -20,12 +23,12 @@ print(type(X))
 print(type(y))
 
 print("ratio before")
-num_one = df[df['true_label'] == 1]
-num_zero = df[df['true_label'] == 0]
-ratio = float(num_zero.size) / float(num_one.size)
+num_one = np.count_nonzero(y == 1)
+num_zero = np.count_nonzero(y == 0)
+ratio = float(num_zero) / float(num_one)
 print(ratio)
 
-smote = SMOTE(ratio=9, verbose=False, kind='regular')
+smote = SMOTETomek(ratio=9, verbose=False)
 smox, smoy = smote.fit_transform(X, y)
 
 print("ratio after")
@@ -34,7 +37,10 @@ num_zero = np.count_nonzero(smoy == 0)
 ratio = float(num_zero) / float(num_one)
 print(ratio)
 
-clf = DecisionTreeClassifier()
+#clf = DecisionTreeClassifier()
+#clf = SVC()
+#clf = MultinomialNB()
+clf = KNeighborsClassifier(n_neighbors=3)
 
 scores = cross_validation.cross_val_score(clf, smox, smoy, cv=10, scoring='f1')
 print("F1: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
