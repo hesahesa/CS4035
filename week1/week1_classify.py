@@ -2,6 +2,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import SVC
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import confusion_matrix
 import numpy as np
 from sklearn import cross_validation
 from unbalanced_dataset import SMOTETomek
@@ -28,7 +29,7 @@ num_zero = np.count_nonzero(y == 0)
 ratio = float(num_zero) / float(num_one)
 print(ratio)
 
-smote = SMOTETomek(ratio=9, verbose=False)
+smote = SMOTETomek(ratio=90, verbose=False)
 smox, smoy = smote.fit_transform(X, y)
 
 print("ratio after")
@@ -40,7 +41,14 @@ print(ratio)
 #clf = DecisionTreeClassifier()
 #clf = SVC()
 #clf = MultinomialNB()
-clf = KNeighborsClassifier(n_neighbors=3)
+clf = KNeighborsClassifier(n_neighbors=1)
+
+#X_train, X_test, y_train, y_test = cross_validation.train_test_split(smox, smoy, train_size=0.8)
+
+#clf.fit(X_train, y_train)
+#predicted = clf.predict(X_test)
+
+#print(confusion_matrix(y_test, predicted, labels=[1, 0]))
 
 scores = cross_validation.cross_val_score(clf, smox, smoy, cv=10, scoring='f1')
 print("F1: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
