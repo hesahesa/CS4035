@@ -5,7 +5,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import confusion_matrix
 import numpy as np
 from sklearn import cross_validation
-from unbalanced_dataset import SMOTETomek
+from unbalanced_dataset import SMOTETomek  # pip install git+https://github.com/fmfn/UnbalancedDataset
 import pandas as pd
 
 df = pd.read_csv('after_preprocess.csv', parse_dates=['bookingdate', 'creationdate'])
@@ -30,10 +30,10 @@ num_zero = np.count_nonzero(y == 0)
 ratio = float(num_zero) / float(num_one)
 print(ratio)
 
-X_train, X_test, y_train, y_test = cross_validation.train_test_split(X, y, train_size=0.8)
+#X_train, X_test, y_train, y_test = cross_validation.train_test_split(X, y, train_size=0.8)
 
 smote = SMOTETomek(ratio=90, verbose=False)
-smox, smoy = smote.fit_transform(X_train, y_train)
+smox, smoy = smote.fit_transform(X, y)
 
 print("ratio after")
 num_one = np.count_nonzero(smoy == 1)
@@ -46,13 +46,22 @@ print(ratio)
 #clf = MultinomialNB()
 clf = KNeighborsClassifier(n_neighbors=1)
 
-clf.fit(smox, smoy)
-predicted = clf.predict(X_test)
+#clf.fit(smox, smoy)
+#predicted = clf.predict(X_test)
 
-print(confusion_matrix(y_test, predicted, labels=[1, 0]))
+#print(confusion_matrix(y_test, predicted, labels=[1, 0]))
 
-#scores = cross_validation.cross_val_score(clf, smox, smoy, cv=10, scoring='f1')
-#print("F1: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
+scores = cross_validation.cross_val_score(clf, smox, smoy, cv=10, scoring='precision')
+print("precision: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
+
+scores = cross_validation.cross_val_score(clf, smox, smoy, cv=10, scoring='recall')
+print("recall: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
+
+scores = cross_validation.cross_val_score(clf, smox, smoy, cv=10, scoring='accuracy')
+print("accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
+
+scores = cross_validation.cross_val_score(clf, smox, smoy, cv=10, scoring='f1')
+print("F1: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
 
 #clf.fit(X[:-1], y[:-1])
 
