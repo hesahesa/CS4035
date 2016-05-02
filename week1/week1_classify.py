@@ -52,16 +52,16 @@ clf = KNeighborsClassifier(n_neighbors=1)
 #print(confusion_matrix(y_test, predicted, labels=[1, 0]))
 
 scores = cross_validation.cross_val_score(clf, smox, smoy, cv=10, scoring='precision')
-print("precision: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
+print("precision: %0.4f (+/- %0.4f)" % (scores.mean(), scores.std() * 2))
 
 scores = cross_validation.cross_val_score(clf, smox, smoy, cv=10, scoring='recall')
-print("recall: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
+print("recall: %0.4f (+/- %0.4f)" % (scores.mean(), scores.std() * 2))
 
 scores = cross_validation.cross_val_score(clf, smox, smoy, cv=10, scoring='accuracy')
-print("accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
+print("accuracy: %0.4f (+/- %0.4f)" % (scores.mean(), scores.std() * 2))
 
 scores = cross_validation.cross_val_score(clf, smox, smoy, cv=10, scoring='f1')
-print("F1: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
+print("F1: %0.4f (+/- %0.4f)" % (scores.mean(), scores.std() * 2))
 
 #clf.fit(X[:-1], y[:-1])
 
