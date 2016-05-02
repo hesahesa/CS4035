@@ -28,33 +28,24 @@ def isIssuerSameWithShopper(row):
     else:
         return 0
 
-def findMeanOfCurrency(currCode):
-    tmp = df[df['currencycode'] == currCode]
-    retval = tmp['amount'].mean(axis=0)
-    return retval
-
 def getRelativeAmount(row):
     currAmount = row['amount']
+    meanamount = row['average_amount_daily']
     if row['currencycode'] == 'AUD':
-        meanamount = mean_AUD
-        upperthreshold = meanamount + threeshold_AUD
-        lowerthreeshold = meanamount - threeshold_AUD
+        upperthreshold = meanamount + (threeshold_AUD * meanamount)
+        lowerthreeshold = meanamount - (threeshold_AUD * meanamount)
     elif row['currencycode'] == 'GBP':
-        meanamount = mean_GBP
-        upperthreshold = meanamount + threeshold_GBP
-        lowerthreeshold = meanamount - threeshold_GBP
+        upperthreshold = meanamount + (threeshold_GBP * meanamount)
+        lowerthreeshold = meanamount - (threeshold_GBP * meanamount)
     elif row['currencycode'] == 'MXN':
-        meanamount = mean_MXN
-        upperthreshold = meanamount + threeshold_MXN
-        lowerthreeshold = meanamount - threeshold_MXN
+        upperthreshold = meanamount + (threeshold_MXN * meanamount)
+        lowerthreeshold = meanamount - (threeshold_MXN * meanamount)
     elif row['currencycode'] == 'NZD':
-        meanamount = mean_NZD
-        upperthreshold = meanamount + threeshold_NZD
-        lowerthreeshold = meanamount - threeshold_NZD
+        upperthreshold = meanamount + (threeshold_NZD * meanamount)
+        lowerthreeshold = meanamount - (threeshold_NZD * meanamount)
     elif row['currencycode'] == 'SEK':
-        meanamount = mean_SEK
-        upperthreshold = meanamount + threeshold_SEK
-        lowerthreeshold = meanamount - threeshold_SEK
+        upperthreshold = meanamount + (threeshold_SEK * meanamount)
+        lowerthreeshold = meanamount - (threeshold_SEK * meanamount)
 
     if currAmount <= upperthreshold and currAmount >= lowerthreeshold:
         return 0
@@ -100,12 +91,6 @@ threeshold_MXN = 0
 threeshold_NZD = 0
 threeshold_SEK = 0
 
-mean_AUD = findMeanOfCurrency('AUD')
-mean_GBP = findMeanOfCurrency('GBP')
-mean_MXN = findMeanOfCurrency('MXN')
-mean_NZD = findMeanOfCurrency('NZD')
-mean_SEK = findMeanOfCurrency('SEK')
-
 print("generate 1")
 df['creationdate_dateonly'] = df.apply(lambda row: parseCreationDate(row), axis=1)
 print("generate 2")
@@ -113,9 +98,9 @@ df['is_same_currency_shopper'] = df.apply(lambda row: isCurrencySameWithShopper(
 print("generate 3")
 df['is_same_issuer_shopper'] = df.apply(lambda row: isIssuerSameWithShopper(row), axis=1)
 print("generate 4")
-df['relative_amount'] = df.apply(lambda row: getRelativeAmount(row), axis=1)
-print("generate 5")
 df['average_amount_daily'] = df.apply(lambda row: getDailyAverage(row), axis=1)
+print("generate 5")
+df['relative_amount'] = df.apply(lambda row: getRelativeAmount(row), axis=1)
 print("generate 6")
 df['transaction_hour'] = df.apply(lambda row: parseHour(row), axis=1)
 print("generate 7")
