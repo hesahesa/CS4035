@@ -1,6 +1,7 @@
+import math
 import pandas as pd
 import bitarray
-import mmh3
+import pymmh3 as mmh3
 
 
 def loadDataStream():
@@ -15,6 +16,7 @@ def loadDataStream():
     print(grouped.count().sort_values('creationdate', ascending = False).head(n = 10))
 
     return df_sort_creation
+
 
 def applyFREQUENT(df,k):
     c = {}
@@ -86,7 +88,7 @@ for k in [10,100,1000]:
     print(c)
 
 num_rec = len(df)
-half_rec = (num_rec/2).astype(int)
+half_rec = math.floor(num_rec/2)
 
 df_train = df.loc[0:half_rec]
 df_test = df.loc[(half_rec+1):(num_rec-1)]
