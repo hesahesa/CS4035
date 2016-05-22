@@ -1,6 +1,6 @@
 import math
 import pandas as pd
-import bitarray
+from bitarray import bitarray
 import pymmh3 as mmh3
 
 
@@ -46,11 +46,13 @@ class BloomFilter:
         self.bit_array.setall(0)
 
     def add(self, string):
+        string = str.encode(str(string))
         for seed in range(1,self.hash_count):
             result = mmh3.hash(string, seed) % self.size
             self.bit_array[result] = 1
 
     def lookup(self, string):
+        string = str.encode(str(string))
         for seed in range(1,self.hash_count):
             result = mmh3.hash(string, seed) % self.size
             if self.bit_array[result] == 0:
@@ -69,11 +71,13 @@ class CountMinSketch:
             self.arrays[i] =  bit_array
 
     def add(self, string, val):
+        string = str.encode(str(string))
         for seed in range(1,self.hash_count):
             result = mmh3.hash(string, seed) % self.size
             self.arrays[seed][result] = val
 
     def lookup(self, string):
+        string = str.encode(str(string))
         vals = []
         for seed in range(1,self.hash_count):
             result = mmh3.hash(string, seed) % self.size
