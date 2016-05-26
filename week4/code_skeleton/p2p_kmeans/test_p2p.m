@@ -44,7 +44,7 @@ iter_max = 15; % run k-means for iter_max iterations
 tic; % Start timer!
 if flag_parallel == 1
     for iter=1:iter_max
-        centroids = kmeans_p2p(data_slaves,centroids, Graph,local_centroids);
+        local_centroids = kmeans_p2p(data_slaves,N_slaves, Graph,local_centroids);
     end
 else
     for iter=1:iter_max
