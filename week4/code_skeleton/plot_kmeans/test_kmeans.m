@@ -5,9 +5,11 @@ centroids = gendat(X,n_cluster/size(X,1));
 
 converge = false;
 while not(converge)
-    % for each iteration, update the means until it converges
+    % for each iteration, update the centroids until it converges
+    % assign the clusters
     [cost,idx_cluster] = cluster_assignment(X,centroids);
     new_centroids = [];
+    % get new centroids
     for clust=1:n_cluster
         new_centroids(clust,:) = get_centroid(X(idx_cluster==clust,:));
     end

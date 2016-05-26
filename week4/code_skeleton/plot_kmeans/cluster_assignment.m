@@ -6,11 +6,14 @@ Cost = [];
 idx_cluster = [];
     
 for i=1:Nrecords
+    % for each record, find the nearest centroid
     current_data = data(i,:);
+    %calculate the distance to each centroid
     diff = ones(K,1)*current_data - centroids;
-    dist = (sqrt(sum((diff').^2,1))).^2;
-    [Min IMin] = min(dist,[],2);
+    dist = (sqrt(sum((diff').^2,1))).^2; %norm^2 for each cluster distance
     
+    % get the nearest centroid
+    [Min IMin] = min(dist,[],2);
     Cost(i,1) = Min;
     idx_cluster(i,1) = IMin;
 end
