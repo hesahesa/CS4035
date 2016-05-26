@@ -8,12 +8,13 @@ function local_cluster = kmeans_mpi_slave(data,centroids)
     end
 
     % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    for j=1:size(data,1) % Process Chunk of Data
-        ...
-    end
+    % Process Chunk of Data
+    [cost,idx_cluster] = cluster_assignment(data,centroids);
+    
     % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % %%  Compute new centroids and sizes
     for j=1:K
-        local_cluster{j}.sizes = ... ;
-        local_cluster{j}.centroids = ... ;
+        cluster{j} = data(idx_cluster==j,:);
+        local_cluster{j}.sizes = size(cluster{j},1) ;
+        local_cluster{j}.centroids = get_centroid(cluster{j}) ;
     end
