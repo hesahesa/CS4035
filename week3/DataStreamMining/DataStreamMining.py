@@ -2,6 +2,7 @@ import math
 import pandas as pd
 from bitarray import bitarray
 import pymmh3 as mmh3
+import operator
 
 
 def loadDataStream():
@@ -66,15 +67,14 @@ class CountMinSketch:
         self.hash_count = hash_count
         self.arrays = {}
         for i in range(1,self.hash_count):
-            bit_array = bitarray(size)
-            bit_array.setall(0)
-            self.arrays[i] =  bit_array
+            val_array = [0]*size
+            self.arrays[i] =  val_array
 
     def add(self, string, val):
         string = str.encode(str(string))
         for seed in range(1,self.hash_count):
             result = mmh3.hash(string, seed) % self.size
-            self.arrays[seed][result] = val
+            self.arrays[seed][result] = val + self.arrays[seed][result]
 
     def lookup(self, string):
         string = str.encode(str(string))
@@ -87,36 +87,79 @@ class CountMinSketch:
 
 df = loadDataStream()
 
+# Test FREQUENT
 for k in [10,100,1000]:
-    c = applyFREQUENT(df,10)
-    print(c)
+    c = applyFREQUENT(df,k)
+    sorted_c = sorted(c.items(), key=operator.itemgetter(1))
+    sorted_c.reverse()
+    print("FREQUENT with k="+str(k)+": "+str(sorted_c[0:10]))
 
+# Test BLOOM
+# separate the data into trainset and test set
 num_rec = len(df)
 half_rec = math.floor(num_rec/2)
 
 df_train = df.loc[0:half_rec]
 df_test = df.loc[(half_rec+1):(num_rec-1)]
 
-for size in [10,100,1000]:
-    for hash_count in [3,5,7]:
+#compare the values in test set
+unique_train = set(df_train['euro'])
+unique_test = set(df_test['euro'])
+correct_result = {}
+for check_test in unique_test:
+    if(check_test in unique_train):
+        correct_result[check_test] = 1
+    else:
+        correct_result[check_test] = 0
+
+# hash the train set using BLOOM
+for size in [10,100,1000, 10000]:
+    for hash_count in [3,6,10,15]:
         bloom = BloomFilter(size,hash_count)
         for rec in df_train['euro']:
             bloom.add(rec)
 
+        #lookup each value in test set using BLOOM
         lookup = {}
-        for rec in df_test['euro']:
+        for rec in unique_test:
             lookup[rec] = bloom.lookup(rec)
 
-        print(lookup)
+        eval_BLOOM = {}
+        eval_BLOOM['true_positive'] = 0
+        eval_BLOOM['true_negative'] = 0
+        eval_BLOOM['false_positive'] = 0
+        eval_BLOOM['false_negative'] = 0
 
-for size in [10,100,1000]:
-    for hash_count in [3,5,7]:
+        for check_test in unique_test:
+            if(lookup[check_test]==correct_result[check_test]):
+                if(lookup[check_test]==1):
+                    eval_BLOOM['true_positive'] = eval_BLOOM['true_positive'] + 1
+                else:
+                    eval_BLOOM['true_negative'] = eval_BLOOM['true_negative'] + 1
+            else:
+                if (lookup[check_test] == 1):
+                    eval_BLOOM['false_positive'] = eval_BLOOM['false_positive'] + 1
+                else:
+                    eval_BLOOM['false_negative'] = eval_BLOOM['false_negative'] + 1
+        for cat in eval_BLOOM:
+            eval_BLOOM[cat] = eval_BLOOM[cat]/num_rec
+
+        print("BLOOM evaluation with size="+str(size)+" and hash="+str(hash_count)+": "+str(eval_BLOOM))
+
+# test the Count Min Sketch
+for size in [100,1000,10000,100000]:
+    for hash_count in [3,6,10,15]:
         minsketch = CountMinSketch(size,hash_count)
-        for rec in df_train['euro']:
-            minsketch.add(rec)
+        for rec in df['euro']:
+            minsketch.add(rec,1)
 
         lookup = {}
-        for rec in df_test['euro']:
-            lookup[rec] = bloom.lookup(rec)
+        unique_values = set(df['euro'])
+        for rec in unique_values:
+            lookup[rec] = minsketch.lookup(rec)
 
-        print(lookup)
+        sorted_freq = sorted(lookup.items(), key=operator.itemgetter(1))
+        sorted_freq.reverse()
+        print("Top 10 frequencies with size="+str(size)+" and hash="+str(hash_count)+": "+str(sorted_freq[0:10]))
+
+
