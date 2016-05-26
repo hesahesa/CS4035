@@ -5,8 +5,6 @@
 clear;
 load data.mat
 
-X = X(:,[1 2]);
-
 Nrecords = size(X,1);
 
 % Set clustering parameters

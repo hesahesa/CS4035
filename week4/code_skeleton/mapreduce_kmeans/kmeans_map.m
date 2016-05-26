@@ -19,7 +19,6 @@ function KVtable = kmeans_map(data, centroids)
     %end
 
     [Cost,idx_cluster] = cluster_assignment(data, centroids);
-    
     % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % %%  Compute new centroids
     for j=1:K
