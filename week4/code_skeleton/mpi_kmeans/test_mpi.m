@@ -5,10 +5,12 @@
 clear;
 load data.mat
 
+X = X(:,[1 2]);
+
 Nrecords = size(X,1);
 
 % Set clustering parameters
-K =3;
+K =6;
 centroids = X([1:ceil(Nrecords/K):Nrecords] , :); %initialize set of K centroids
 %centroids = gendat(X,K/size(X,1)); %initialize set of K centroids randomly
 
@@ -30,7 +32,7 @@ if flag_parallel ==1
 end
 %%%
 
-iter_max = 15; % run k-means for iter_max iterations
+iter_max = 5; % run k-means for iter_max iterations
 tic;
 if flag_parallel == 1
     for iter=1:iter_max

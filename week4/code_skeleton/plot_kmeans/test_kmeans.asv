@@ -3,10 +3,10 @@ load data.mat;
 Nrecords = size(X,1);
 K = 6;
 
-% centroids = X([1:ceil(Nrecords/K):Nrecords] , :); %initialize set of K centroids
-
 %initialized the centroids with random points from dataset
 centroids = gendat(X,K/Nrecords);
+
+
 
 max_iter=15;
 for iter=1:max_iter

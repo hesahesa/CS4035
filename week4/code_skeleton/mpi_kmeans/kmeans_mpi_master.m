@@ -10,8 +10,10 @@ function centroids = kmeans_mpi_master(local_clusters,N_slaves)
         for slv=1:N_slaves
             local_centroid = local_clusters{slv}{j}.centroids;
             local_size = local_clusters{slv}{j}.sizes;
-            weighted_sum_centroid = local_clusters{slv}{j}.centroids + local_centroid.*(local_size*ones(1,n_dim));
-            sum_weight = sum_weight + local_size;
+            if(local_size>0)
+                weighted_sum_centroid = local_clusters{slv}{j}.centroids + local_centroid.*(local_size*ones(1,n_dim));
+                sum_weight = sum_weight + local_size;
+            end
         end
         centroids(j,:) = weighted_sum_centroid./sum_weight;
     end

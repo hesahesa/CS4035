@@ -39,7 +39,7 @@ if flag_parallel ==1
 end
 %%%
 
-iter_max = 20; % run k-means for iter_max iterations
+iter_max = 15; % run k-means for iter_max iterations
 
 tic; % Start timer!
 if flag_parallel == 1
