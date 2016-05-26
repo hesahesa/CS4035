@@ -1,3 +1,16 @@
 function centroids = kmeans_reduce(KVtable_keyj)
-
-centroids = ...;
+    argCentroids = KVtable_keyj.centroids;
+    argSizes = KVtable_keyj.sizes;
+    
+    numDim = size(argCentroids(1),2);
+    numMappers = size(argSizes);
+    total_weighted_centroid = 0;
+    totalSize = 0;
+    
+    for i = 1:numMappers
+        currentSize = argSizes(i);
+        total_weighted_centroid = argCentroids(i) .* (currentSize*ones(1,numDim));
+        totalSize = totalSize + currentSize;
+    end    
+    
+    centroids = total_weighted_centroid ./ totalSize;
