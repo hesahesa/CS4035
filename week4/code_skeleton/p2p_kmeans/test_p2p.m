@@ -49,6 +49,12 @@ if flag_parallel == 1
 else
     for iter=1:iter_max
         local_centroids = kmeans_p2p(data_slaves, N_slaves, Graph,local_centroids);
+        
+        %compute the maximum deviation
+        max_dev_1(iter) = -999;
+        for i=1:size(local_centroids,2)
+          max_dev_1(iter) = max(max_dev_1(iter), norm(local_centroids{1} - local_centroids{i} ,inf) );
+       end
     end
 end
 toc % Time Elapsed

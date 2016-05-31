@@ -5,8 +5,8 @@ Nrecords = size(X,1);
 
 % Set clustering parameters
 K =6;
-% centroids = X([1:ceil(Nrecords/K):Nrecords] , :); %initialize set of K centroids
-centroids = gendat(X,K/size(X,1));
+centroids = X([1:ceil(Nrecords/K):Nrecords] , :); %initialize set of K centroids
+%centroids = gendat(X,K/size(X,1));
 
 % set memory contraints
 Lmax = 1000; % maximum number of records per mapper
