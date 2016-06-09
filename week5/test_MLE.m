@@ -1,6 +1,12 @@
 %% Static Estimation
 clear; clc;
-load multiple_samples
+%load multiple_samples
+
+% for testing single_sample
+load single_sample
+num_samples = 1;
+y = y_single;
+sensor = sensor_single;
 
 %num_samples - number of samples
 %N - number of dimensions
