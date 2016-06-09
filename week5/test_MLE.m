@@ -45,6 +45,7 @@ hold off
  hold on;
  
  diff = [];
+ Pinv_size = [];
  
  x_fused_old=zeros(N,num_samples);
  P_fused_old_inv=zeros(N,N);
@@ -58,7 +59,8 @@ hold off
     [x_fused, P_fused_inv]=fuse_estimates(x_fused_old, xhat_local, P_fused_old_inv, P_local^-1);
     error_x_fused = (kron(ones(1,num_samples),x)-x_fused);
     
-    diff = [diff; log(det(inv(P_fused_inv))) - log(det(inv(P_fused_old_inv)))];
+    Pinv_size = [Pinv_size; log(det(P_fused_inv))];
+    diff = [diff; log(det(P_fused_inv)) - log(det(P_fused_old_inv))];
     
     x_fused_old = x_fused;
     P_fused_old_inv = P_fused_inv;
@@ -75,5 +77,10 @@ hold off
 legend(str_leg, 'Location','NW')
 title 'Estimation error per fusion'
 hold off
+% plot the Pinv_size and the difference
 figure
-plot(diff);
+plot([1:m],Pinv_size);
+title 'Size of inversed P per fusion'
+figure
+plot([1:m],diff);
+title 'Size differences per fusion'
