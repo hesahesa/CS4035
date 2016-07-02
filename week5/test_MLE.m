@@ -1,12 +1,12 @@
 %% Static Estimation
 clear; clc;
-%load multiple_samples
+load multiple_samples
 
 % for testing single_sample
-load single_sample
-num_samples = 1;
-y = y_single;
-sensor = sensor_single;
+%load single_sample
+%num_samples = 1;
+%y = y_single;
+%sensor = sensor_single;
 
 %num_samples - number of samples
 %N - number of dimensions
@@ -50,8 +50,8 @@ hold off
  fusion = '';
  hold on;
  
- diff = [];
  Pinv_size = [];
+ diff = [];
  
  x_fused_old=zeros(N,num_samples);
  P_fused_old_inv=zeros(N,N);

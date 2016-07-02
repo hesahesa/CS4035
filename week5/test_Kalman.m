@@ -58,6 +58,8 @@ hold off
  error_x_fused = zeros(N,num_time); %estimation error
  x_fused=zeros(N,num_time); %fused estimate
  
+ 
+err_cov = [];
  for i=1:m % fuse one sensor at a time, for comparison
     C_local = sensor{i}.C;
     R_local = sensor{i}.R;
@@ -68,7 +70,11 @@ hold off
     for k=1:num_time %performs the fusion for all time-steps
         [x_fused(:,k), P_fused_inv{k}]=fuse_estimates(x_fused(:,k), xhat_local(:,k), P_fused_inv{k}, P_local{k}^-1); % updates fused estmates with new local estimates
         error_x_fused(:,k) = x_trajectory(:,k)-x_fused(:,k);  
+        
     end
+    err_cov = [err_cov; cov(error_x_fused(2,:)')];
+    
+    
     P_naive{i} = cov(error_x_fused'); % empirical covariance matrix; If fusion is optimal, P_naive{m} should be close to P{num_time}
 
     if i==1
@@ -152,3 +158,7 @@ for j=1:m %each column k represent the fusion of sensors 1 to k
             log(det(inv(P_centralized)))]; % Centralized Kalman Filter
     acc=[acc, tmp];
 end
+
+figure
+plot(err_cov);
+title('error covariance after each fusion');
